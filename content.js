@@ -165,9 +165,7 @@ function extractPageText() {
   return text;
 }
 
-// --- Text Highlighting and Annotation ---
-let annotations = []; // Array to store annotation data (non-persistent for now)
-
+// --- Text Highlighting ---
 document.addEventListener('mouseup', function(event) {
   if (event.target.closest && (event.target.closest(`#${ANALYSIS_OVERLAY_ID}`) || event.target.closest(`#${LOADING_OVERLAY_ID}`))) {
     return;
@@ -183,33 +181,34 @@ document.addEventListener('mouseup', function(event) {
         return;
     }
 
-    const annotation = prompt(`Enter your thought for the selected text:\n\n"${selectedText}"`, "");
+    // Annotation prompt removed
+    // if (annotation) { // This condition is no longer needed as we are not prompting
 
-    if (annotation) {
-      const range = selection.getRangeAt(0);
-      const span = document.createElement('span');
-      span.className = 'thought-highlight';
-      span.style.textDecoration = 'underline';
-      span.style.backgroundColor = 'yellow';
-      span.style.cursor = 'help';
-      span.title = annotation;
-      span.dataset.annotation = annotation;
+    const range = selection.getRangeAt(0);
+    const span = document.createElement('span');
+    span.className = 'thought-highlight';
+    span.style.textDecoration = 'underline';
+    span.style.backgroundColor = 'yellow';
+    span.style.cursor = 'auto'; // Changed from 'help' to 'auto'
+    // span.title = annotation; // Removed
+    // span.dataset.annotation = annotation; // Removed
 
-      try {
-        if (range.commonAncestorContainer.parentNode.closest('.thought-highlight')) {
-            console.log("Selection is inside an existing highlight. Skipping to prevent nesting.");
-            selection.removeAllRanges();
-            return;
-        }
-        range.surroundContents(span);
-        annotations.push({ range: range.cloneRange(), text: selectedText, annotation: annotation });
-        console.log("Annotation added:", { selectedText, annotation });
-      } catch (e) {
-        console.error("Error surrounding contents: ", e);
-        alert("Could not highlight this selection. It might span across complex HTML elements.");
+    try {
+      if (range.commonAncestorContainer.parentNode.closest('.thought-highlight')) {
+          console.log("Selection is inside an existing highlight. Skipping to prevent nesting.");
+          selection.removeAllRanges();
+          return;
       }
-      selection.removeAllRanges();
+      range.surroundContents(span);
+      // annotations.push({ range: range.cloneRange(), text: selectedText, annotation: annotation }); // Removed
+      console.log("Highlighted text:", selectedText);
+    } catch (e) {
+      console.error("Error surrounding contents: ", e);
+      // Don't alert, just log, as there's no annotation to fail for.
+      // alert("Could not highlight this selection. It might span across complex HTML elements.");
     }
+    selection.removeAllRanges();
+    // } // This closing brace for "if (annotation)" is no longer needed
   }
 });
 
