@@ -1,95 +1,88 @@
-# Truth & Bias Analyzer Chrome Extension
+# ChromeLens
 
-## Overview
+## 개요
 
-The Truth & Bias Analyzer is a Chrome extension designed to help users critically evaluate web content. It analyzes the text of a webpage to provide insights into its potential truthfulness, falsehood, and political or social biases using the OpenAI API. Additionally, it allows users to select, highlight, and annotate portions of text for their own review and reflection.
+**Truth & Bias Analyzer**는 사용자가 웹 콘텐츠를 비판적으로 평가할 수 있도록 돕는 크롬 확장 프로그램입니다. 웹페이지의 텍스트를 분석하여 **진실성**, **허위 가능성**, **정치적/사회적 편향**에 대한 AI 기반 인사이트를 제공합니다. 또한 사용자는 텍스트를 선택해 하이라이트하고 주석을 달 수 있습니다.
 
-## Features
+## 주요 기능
 
-*   **Webpage Text Analysis:** Automatically extracts main text content from visited pages and sends it for analysis.
-*   **AI-Powered Insights:** Provides percentages for estimated truthfulness, falsehood, and detailed bias scores (political: left/right/neutral; social: progressive/conservative/neutral).
-*   **On-Page Overlay:** Displays analysis results in a convenient, dismissible overlay on the current webpage.
-*   **Text Highlighting & Annotation:** Users can select any text on a page, highlight it, and add a personal annotation (thought/note).
-*   **Hover to View Annotations:** Hovering over highlighted text reveals the stored annotation.
-*   **Powered by OpenAI:** Utilizes the OpenAI API (specifically, models like GPT-3.5 Turbo with JSON mode) for text analysis.
+- **웹페이지 텍스트 분석:** 방문한 페이지에서 주요 텍스트를 자동 추출해 분석 수행
+- **AI 기반 인사이트:** 
+  - 진실성/허위성 추정 비율
+  - 정치적 편향 (좌파 / 우파 / 중립)
+  - 사회적 편향 (진보 / 보수 / 중립)
+- **오버레이 UI:** 분석 결과를 현재 페이지 우측 상단에 dismiss 가능한 오버레이로 표시
+- **텍스트 하이라이팅 및 주석 추가:** 사용자가 원하는 텍스트에 직접 메모 가능
+- **하이라이트된 텍스트에 마우스를 올리면 주석 표시**
+- **OpenAI API 기반 분석:** GPT-3.5 Turbo (JSON 모드) 사용
 
-## Installation Instructions
+## 설치 방법
 
-1.  **Get the Extension Files:**
-    *   **Option A (Recommended for development):** Clone this repository to your local machine using Git:
-        ```bash
-        git clone <repository_url>
-        ```
-    *   **Option B:** Download the source code as a ZIP file and extract it to a folder on your computer.
+1. **확장 프로그램 파일 다운로드**
+   - **옵션 A (개발자 추천):** Git으로 로컬에 클론
+     ```bash
+     git clone <repository_url>
+     ```
+   - **옵션 B:** ZIP 파일로 다운로드 후 압축 해제
 
-2.  **Load the Extension in Chrome:**
-    *   Open Google Chrome.
-    *   Navigate to `chrome://extensions` in the address bar.
-    *   Ensure the **Developer mode** toggle (usually in the top-right corner) is **enabled**.
-    *   Click the **Load unpacked** button.
-    *   In the file dialog, select the directory where you cloned or extracted the extension files (this directory should contain `manifest.json`).
-    *   The "Truth & Bias Analyzer" extension should now appear in your list of extensions.
+2. **Chrome에 확장 프로그램 추가**
+   - Chrome 실행 후 `chrome://extensions` 접속
+   - 우측 상단의 **개발자 모드** 활성화
+   - **압축해제된 확장 프로그램 로드** 클릭
+   - `manifest.json`이 포함된 폴더 선택
+   - "Truth & Bias Analyzer" 확장 프로그램이 목록에 추가됨
 
-## Configuration - OpenAI API Key (CRITICAL)
+## OpenAI API 키 설정 (필수)
 
-To use the text analysis features, you **must** configure the extension with your own OpenAI API key.
+1. **API 키 생성**
+   - [OpenAI 플랫폼](https://platform.openai.com/) 가입 후 API 키 발급
 
-1.  **Obtain an OpenAI API Key:**
-    *   If you don't have one, sign up at [OpenAI](https://platform.openai.com/) and generate an API key.
+2. **API 키 확장 프로그램에 저장**
+   - `chrome://extensions` 접속 → 개발자 모드 확인
+   - "Truth & Bias Analyzer" 카드의 **service worker** 링크 클릭
+   - DevTools 콘솔 탭에서 아래 코드 입력:
+     ```javascript
+     chrome.storage.local.set({ openaiApiKey: 'YOUR_API_KEY_HERE' }, () => { console.log('OpenAI API key stored successfully.'); });
+     ```
+   - `'YOUR_API_KEY_HERE'` 부분을 실제 키로 대체하고 Enter
+   - "OpenAI API key stored successfully." 메시지 확인
 
-2.  **Set the API Key in the Extension:**
-    *   Navigate to `chrome://extensions` in Chrome.
-    *   Make sure "Developer mode" is still enabled.
-    *   Find the "Truth & Bias Analyzer" extension card.
-    *   Click on the **"service worker"** link (the text might vary slightly, e.g., "background page" in older versions or for manifest v2 extensions, but for Manifest V3 it's typically "service worker"). This will open the Chrome DevTools console for the extension's background script.
-    *   In the **Console** tab of the DevTools window, paste the following command:
-        ```javascript
-        chrome.storage.local.set({ openaiApiKey: 'YOUR_API_KEY_HERE' }, () => { console.log('OpenAI API key stored successfully.'); });
-        ```
-    *   **IMPORTANT:** Replace `'YOUR_API_KEY_HERE'` with your actual OpenAI API key. Ensure the key is enclosed in single quotes.
-    *   Press Enter to execute the command. You should see the confirmation message "OpenAI API key stored successfully." printed in the console.
+## 사용 방법
 
-    *   **Note on API Key Storage:** The API key is stored locally using `chrome.storage.local`. It is not synced across your devices and will remain on the computer where you set it.
+### 1. 자동 분석
+- 대부분의 웹페이지를 열면 자동으로 분석 수행
+- 페이지 우측 상단에 “Analyzing page...” 메시지 표시
+- 분석 완료 시 오버레이에 결과 표시:
+  - 진실성/허위성 비율
+  - 정치/사회 편향 점수
+  - 간단한 요약 및 상태 메시지
+- "×" 버튼으로 오버레이 닫기 가능
 
-## How to Use
+### 2. 텍스트 주석 및 하이라이트
+- 텍스트를 마우스로 선택 → 주석 입력창 표시
+- 메모 입력 후 확인 → 텍스트가 하이라이트됨
+- 하이라이트된 텍스트에 마우스를 올리면 주석 툴팁 표시
 
-1.  **Automatic Page Analysis:**
-    *   Once the extension is installed and configured with an API key, it will automatically attempt to analyze the main content of most pages you visit.
-    *   A small loading message ("Analyzing page...") will appear in the top-right corner.
-    *   Once analysis is complete (or if an error occurs), an overlay will appear in the top-right corner of the page displaying the results.
-    *   The overlay includes:
-        *   Estimated truthfulness and falsehood percentages.
-        *   Breakdown of political and social bias percentages.
-        *   A brief summary from the AI.
-        *   A status message (e.g., "Live Analysis", "API Error").
-    *   Click the "×" button on the overlay to close it.
+## 문제 해결 (Troubleshooting)
 
-2.  **Text Highlighting and Annotation:**
-    *   **Select Text:** On any webpage, use your mouse to select a portion of text you want to annotate.
-    *   **Annotate:** After you release the mouse button, a prompt will appear asking you to "Enter your thought for the selected text". Type your annotation and click "OK".
-    *   **View Highlight:** The selected text will become highlighted (yellow background with an underline).
-    *   **View Annotation:** Hover your mouse cursor over any highlighted text to see the annotation you saved for it (displayed as a browser tooltip).
+- **"API 키 없음"/"분석 오류" 메시지 표시**
+  - API 키가 올바르게 저장되었는지 확인
+  - OpenAI 계정에 크레딧이 있는지 확인
+  - service worker 콘솔에서 오류 로그 확인
 
-## Troubleshooting
+- **분석 결과 오버레이가 아예 보이지 않음**
+  - 확장 프로그램이 활성 상태인지 확인
+  - 웹페이지의 DevTools 콘솔에서 오류 확인
 
-*   **Analysis Overlay Shows "API Key not found" or "Analysis Error":**
-    *   This is the most common issue. Double-check that you have correctly set your OpenAI API key using the instructions in the "Configuration - OpenAI API Key" section.
-    *   Ensure your OpenAI account associated with the key is active and has available credits/quota.
-    *   Open the service worker console (as described in API key setup) and look for more detailed error messages.
-*   **No Analysis Overlay Appears at All:**
-    *   Ensure the extension is enabled in `chrome://extensions`.
-    *   Open the DevTools console for the *webpage itself* (Right-click on the page -> Inspect -> Console) and look for any errors related to the content script (`content.js`).
-    *   The page might not have significant text content, or it might be structured in a way the extraction script cannot easily parse.
-*   **Highlighting Doesn't Work:**
-    *   Ensure you are selecting text and not clicking, or selecting text within an input field or editor.
-    *   Check the webpage's console for errors. Some complex websites might interfere with the selection mechanism.
+- **하이라이팅 기능 작동 안 함**
+  - 입력창이나 편집기 안의 텍스트가 아닌 일반 텍스트를 선택했는지 확인
+  - 페이지의 콘솔에서 오류 확인
 
-## Disclaimer
+## 면책 조항
 
-*   **AI Analysis is Not Infallible:** The truthfulness, falsehood, and bias percentages provided by the AI are estimates based on its training data and the provided text. They should not be taken as absolute facts. Always use your critical judgment and consult multiple sources.
-*   **Privacy:**
-    *   **Page Content:** To perform analysis, the textual content of the webpage you are viewing is sent to the OpenAI API. Refer to OpenAI's [API data usage policies](https://openai.com/policies/api-data-usage-policies) for how they handle data.
-    *   **Annotations:** Your text highlights and annotations are currently stored locally on your computer using `chrome.storage.local` (associated with the highlighting feature, though full persistence isn't implemented yet for annotations). They are not transmitted anywhere else by this extension.
+- **AI 분석은 참고용입니다:** AI가 제공하는 수치는 참고용일 뿐이며, 절대적인 기준은 아닙니다. 비판적 사고를 바탕으로 다양한 출처를 확인하시기 바랍니다.
+- **개인정보 및 보안**
+  - **페이지 텍스트 전송:** 웹페이지 텍스트는 OpenAI API로 전송되어 분석됩니다. [OpenAI 데이터 정책](https://openai.com/policies/api-data-usage-policies)을 참고하세요.
+  - **주석 저장:** 주석 및 하이라이트 정보는 브라우저의 `chrome.storage.local`에 로컬 저장됩니다. 외부로 전송되지 않습니다.
 
 ---
-This README provides a comprehensive guide for users.
