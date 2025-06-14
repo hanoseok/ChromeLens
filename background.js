@@ -111,31 +111,53 @@ ${text}
 
 // Make the listener async to use await
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
-  console.log("Message received in background script:", request);
-  if (request.type === "TEXT_EXTRACTED") {
-    try {
-      console.log("Background script received text length:", request.text.length);
+  try {
+    console.log("Message received in background script:", request);
 
-      const analysisResult = await analyzeTextWithOpenAI(request.text);
+    if (request && request.type === "TEXT_EXTRACTED") {
+      try {
+        console.log("Background script received text length:", request.text.length);
 
-      if (analysisResult.error) {
-          sendResponse({ status: "API Error", message: analysisResult.summary, analysis: analysisResult });
-      } else {
-          sendResponse({ status: "Analysis complete (Live API)", analysis: analysisResult });
+        const analysisResult = await analyzeTextWithOpenAI(request.text);
+
+        if (analysisResult.error) {
+            sendResponse({ status: "API Error", message: analysisResult.summary, analysis: analysisResult });
+        } else {
+            sendResponse({ status: "Analysis complete (Live API)", analysis: analysisResult });
+        }
+      } catch (e) {
+        console.error("Unhandled error in TEXT_EXTRACTED processing:", e); // Changed console message for clarity
+        sendResponse({
+          status: "Background Script Error", // Kept status generic as this is within TEXT_EXTRACTED
+          analysis: {
+            error: true,
+            summary: "An unexpected error occurred while processing text.", // More specific summary
+            errorDetails: e && e.message ? e.message : "Unknown error during text processing"
+          }
+        });
       }
-    } catch (e) {
-      console.error("Unhandled error in onMessage listener:", e);
+    } else {
+      // Handle unknown message types
+      console.warn("Unknown message type received:", request && request.type);
       sendResponse({
-        status: "Background Script Error",
+        status: "Unknown Message Type",
         analysis: {
           error: true,
-          summary: "An unexpected error occurred in the background script.",
-          errorDetails: e && e.message ? e.message : "Unknown error"
+          summary: "Message type not recognized by background script.",
+          errorDetails: `Received type: ${request ? String(request.type) : 'undefined'}`
         }
       });
     }
+  } catch (globalError) {
+    console.error("Global error in onMessage listener:", globalError);
+    sendResponse({
+      status: "Global Background Script Error",
+      analysis: {
+        error: true,
+        summary: "An unexpected global error occurred in the background script listener.",
+        errorDetails: globalError && globalError.message ? globalError.message : "Unknown global error"
+      }
+    });
   }
-  // If other message types were handled that are synchronous, returning true might be needed there.
-  // For this single async handler, it's fine.
-  return true; // Still good practice for clarity and future message types.
+  return true; // Crucial for async sendResponse
 });
