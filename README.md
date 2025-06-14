@@ -1,103 +1,11 @@
-# ChromeLens
+# Simple Hello Alert Extension
 
-## 개요
+This Chrome extension shows a 'hello' alert when a page is loaded.
 
-**Truth & Bias Analyzer**는 사용자가 웹 콘텐츠를 비판적으로 평가할 수 있도록 돕는 크롬 확장 프로그램입니다. 웹페이지의 텍스트를 분석하여 **진실성**, **허위 가능성**, **정치적/사회적 편향**에 대한 AI 기반 인사이트를 제공합니다. 또한 사용자는 텍스트를 선택해 하이라이트하고 주석을 달 수 있습니다.
+## Installation
 
-## 주요 기능
-
-- **웹페이지 텍스트 분석:** 방문한 페이지에서 주요 텍스트를 자동 추출해 분석 수행
-- **AI 기반 인사이트:** 
-  - 진실성/허위성 추정 비율
-  - 정치적 편향 (좌파 / 우파 / 중립)
-  - 사회적 편향 (진보 / 보수 / 중립)
-- **오버레이 UI:** 분석 결과를 현재 페이지 우측 상단에 dismiss 가능한 오버레이로 표시
-- **텍스트 하이라이팅 및 주석 추가:** 사용자가 원하는 텍스트에 직접 메모 가능
-- **하이라이트된 텍스트에 마우스를 올리면 주석 표시**
-- **OpenAI API 기반 분석:** GPT-3.5 Turbo (JSON 모드) 사용
-
-## 설치 방법
-
-1. **확장 프로그램 파일 다운로드**
-   - **옵션 A (개발자 추천):** Git으로 로컬에 클론
-     ```bash
-     git clone <repository_url>
-     ```
-   - **옵션 B:** ZIP 파일로 다운로드 후 압축 해제
-
-2. **Chrome에 확장 프로그램 추가**
-   - Chrome 실행 후 `chrome://extensions` 접속
-   - 우측 상단의 **개발자 모드** 활성화
-   - **압축해제된 확장 프로그램 로드** 클릭
-   - `manifest.json`이 포함된 폴더 선택
-   - "Truth & Bias Analyzer" 확장 프로그램이 목록에 추가됨
-
-## OpenAI API 키 설정 (필수)
-
-1. **API 키 생성**
-   - [OpenAI 플랫폼](https://platform.openai.com/) 가입 후 API 키 발급
-
-2. **API 키 확장 프로그램에 저장**
-   - `chrome://extensions` 접속 → 개발자 모드 확인
-   - "Truth & Bias Analyzer" 카드의 **service worker** 링크 클릭
-   - DevTools 콘솔 탭에서 아래 코드 입력:
-     ```javascript
-     chrome.storage.local.set({ openaiApiKey: 'YOUR_API_KEY_HERE' }, () => { console.log('OpenAI API key stored successfully.'); });
-     ```
-   - `'YOUR_API_KEY_HERE'` 부분을 실제 키로 대체하고 Enter
-   - "OpenAI API key stored successfully." 메시지 확인
-
-## 사용 방법
-
-### 1. 자동 분석
-- 대부분의 웹페이지를 열면 자동으로 분석 수행
-- 페이지 우측 상단에 “Analyzing page...” 메시지 표시
-- 분석 완료 시 오버레이에 결과 표시:
-  - 진실성/허위성 비율
-  - 정치/사회 편향 점수
-  - 간단한 요약 및 상태 메시지
-- "×" 버튼으로 오버레이 닫기 가능
-
-### 2. 텍스트 주석 및 하이라이트
-- 텍스트를 마우스로 선택 → 주석 입력창 표시
-- 메모 입력 후 확인 → 텍스트가 하이라이트됨
-- 하이라이트된 텍스트에 마우스를 올리면 주석 툴팁 표시
-
-## 문제 해결 (Troubleshooting)
-
-- **"API 키 없음"/"분석 오류" 메시지 표시**
-  - API 키가 올바르게 저장되었는지 확인
-  - OpenAI 계정에 크레딧이 있는지 확인
-  - service worker 콘솔에서 오류 로그 확인
-
-- **분석 결과 오버레이가 아예 보이지 않음**
-  - 확장 프로그램이 활성 상태인지 확인
-  - 웹페이지의 DevTools 콘솔에서 오류 확인
-
-- **하이라이팅 기능 작동 안 함**
-  - 입력창이나 편집기 안의 텍스트가 아닌 일반 텍스트를 선택했는지 확인
-  - 페이지의 콘솔에서 오류 확인
-
-## 면책 조항
-
-- **AI 분석은 참고용입니다:** AI가 제공하는 수치는 참고용일 뿐이며, 절대적인 기준은 아닙니다. 비판적 사고를 바탕으로 다양한 출처를 확인하시기 바랍니다.
-- **개인정보 및 보안**
-  - **페이지 텍스트 전송:** 웹페이지 텍스트는 OpenAI API로 전송되어 분석됩니다. [OpenAI 데이터 정책](https://openai.com/policies/api-data-usage-policies)을 참고하세요.
-  - **주석 저장:** 주석 및 하이라이트 정보는 브라우저의 `chrome.storage.local`에 로컬 저장됩니다. 외부로 전송되지 않습니다.
-
----
-
-## How to Build the CRX File
-
-This project includes a `build.sh` script to package the extension into a CRX file.
-
-**Prerequisites:** Before running the script, ensure you have `chromium-browser` (or Google Chrome) installed and accessible in your system's PATH. You also need `openssl` to generate the private key if it doesn't exist.
-
-**How to run the script:** To build the extension, navigate to the project's root directory in your terminal and run:
-```bash
-./build.sh
-```
-
-**Output:** The script will create a `dist` directory (if it doesn't already exist) and place the packaged `TruthAndBiasAnalyzer.crx` file inside it.
-
-**About the private key:** The first time you run the script, it will generate a private key file named `key.pem` in the project root if one is not already present. This key is used to sign your extension. **Important:** Keep this `key.pem` file safe. If you lose it, you won't be able to update your extension under the same ID. It's recommended to reuse this key for subsequent builds to maintain a consistent extension ID. Do not commit `key.pem` to public repositories if you want to keep your extension ID private, though for local development and testing, it's fine.
+1. Download the files.
+2. Go to `chrome://extensions` in your Chrome browser.
+3. Enable **Developer mode** (usually a toggle in the top right).
+4. Click the **Load unpacked** button.
+5. Select the folder containing the extension files (this `README.md`, `manifest.json`, and `content.js`).
