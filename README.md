@@ -86,3 +86,18 @@
   - **주석 저장:** 주석 및 하이라이트 정보는 브라우저의 `chrome.storage.local`에 로컬 저장됩니다. 외부로 전송되지 않습니다.
 
 ---
+
+## How to Build the CRX File
+
+This project includes a `build.sh` script to package the extension into a CRX file.
+
+**Prerequisites:** Before running the script, ensure you have `chromium-browser` (or Google Chrome) installed and accessible in your system's PATH. You also need `openssl` to generate the private key if it doesn't exist.
+
+**How to run the script:** To build the extension, navigate to the project's root directory in your terminal and run:
+```bash
+./build.sh
+```
+
+**Output:** The script will create a `dist` directory (if it doesn't already exist) and place the packaged `TruthAndBiasAnalyzer.crx` file inside it.
+
+**About the private key:** The first time you run the script, it will generate a private key file named `key.pem` in the project root if one is not already present. This key is used to sign your extension. **Important:** Keep this `key.pem` file safe. If you lose it, you won't be able to update your extension under the same ID. It's recommended to reuse this key for subsequent builds to maintain a consistent extension ID. Do not commit `key.pem` to public repositories if you want to keep your extension ID private, though for local development and testing, it's fine.
