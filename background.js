@@ -113,19 +113,27 @@ ${text}
 chrome.runtime.onMessage.addListener(async (request, sender, sendResponse) => {
   console.log("Message received in background script:", request);
   if (request.type === "TEXT_EXTRACTED") {
-    console.log("Background script received text length:", request.text.length);
+    try {
+      console.log("Background script received text length:", request.text.length);
 
-    const analysisResult = await analyzeTextWithOpenAI(request.text);
+      const analysisResult = await analyzeTextWithOpenAI(request.text);
 
-    if (analysisResult.error) {
-        sendResponse({ status: "API Error", message: analysisResult.summary, analysis: analysisResult });
-    } else {
-        sendResponse({ status: "Analysis complete (Live API)", analysis: analysisResult });
+      if (analysisResult.error) {
+          sendResponse({ status: "API Error", message: analysisResult.summary, analysis: analysisResult });
+      } else {
+          sendResponse({ status: "Analysis complete (Live API)", analysis: analysisResult });
+      }
+    } catch (e) {
+      console.error("Unhandled error in onMessage listener:", e);
+      sendResponse({
+        status: "Background Script Error",
+        analysis: {
+          error: true,
+          summary: "An unexpected error occurred in the background script.",
+          errorDetails: e && e.message ? e.message : "Unknown error"
+        }
+      });
     }
-    // No explicit 'return true;' needed for async listeners if sendResponse is called on all paths of the promise.
-    // However, if there were paths where sendResponse wasn't called, it might be needed.
-    // For clarity or if logic becomes more complex, it can be kept.
-    // For now, it's implicitly handled by returning a promise.
   }
   // If other message types were handled that are synchronous, returning true might be needed there.
   // For this single async handler, it's fine.
