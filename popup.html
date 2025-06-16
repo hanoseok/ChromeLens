@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Falsehood Detector</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      width: 300px;
+      padding: 10px;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    input[type='text'] {
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 8px 12px;
+      cursor: pointer;
+    }
+    #status {
+      margin-top: 5px;
+      font-size: 0.9em;
+      color: green;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h3>Falsehood Detector</h3>
+
+    <div class="row">
+      <label for="onOffSwitch">Enable Extension:</label>
+      <input type="checkbox" id="onOffSwitch">
+    </div>
+
+    <hr>
+
+    <div>
+      <label for="apiKey">OpenAI API Key:</label>
+      <input type="text" id="apiKey" placeholder="Enter your API key">
+      <button id="saveApiKey">Save Key</button>
+      <div id="apiKeyStatus"></div>
+    </div>
+
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>
